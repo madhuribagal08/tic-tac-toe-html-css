@@ -1,69 +1,54 @@
-let timer;
-let isRunning = false;
-let seconds = 0;
-let minutes = 0;
-let hours = 0;
-let lapCounter = 1;
+const cells = document.querySelectorAll('.cell');
+const status = document.getElementById('status');
+const resetBtn = document.getElementById('reset');
+let currentPlayer = 'X';
+let board = Array(9).fill(null);
 
-const display = document.getElementById("display");
-const startStopBtn = document.getElementById("startStopBtn");
-const lapBtn = document.getElementById("lapBtn");
-const resetBtn = document.getElementById("resetBtn");
-const lapsList = document.getElementById("lapsList");
-
-function updateDisplay() {
-  const formattedTime = 
-    `${hours.toString().padStart(2, "0")}:` +
-    `${minutes.toString().padStart(2, "0")}:` +
-    `${seconds.toString().padStart(2, "0")}`;
-  display.textContent = formattedTime;
+function checkWinner() {
+  const winPatterns = [
+    [0,1,2],[3,4,5],[6,7,8], // rows
+    [0,3,6],[1,4,7],[2,5,8], // cols
+    [0,4,8],[2,4,6]          // diagonals
+  ];
+  
+  for (const [a,b,c] of winPatterns) {
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      status.textContent = `${board[a]} wins! 🎉`;
+      cells.forEach(cell => cell.removeEventListener('click', handleClick));
+      return true;
+    }
+  }
+  if (!board.includes(null)) {
+    status.textContent = "It's a draw!";
+    return true;
+  }
+  return false;
 }
 
-function startStopwatch() {
-  if (!isRunning) {
-    timer = setInterval(() => {
-      seconds++;
-      if (seconds === 60) {
-        seconds = 0;
-        minutes++;
-      }
-      if (minutes === 60) {
-        minutes = 0;
-        hours++;
-      }
-      updateDisplay();
-    }, 1000);
-    startStopBtn.textContent = "Pause";
-    isRunning = true;
-  } else {
-    clearInterval(timer);
-    startStopBtn.textContent = "Start";
-    isRunning = false;
+function handleClick(e) {
+  const index = e.target.dataset.index;
+  if (board[index]) return;
+
+  board[index] = currentPlayer;
+  e.target.textContent = currentPlayer;
+  e.target.classList.add('taken');
+
+  if (!checkWinner()) {
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    status.textContent = `${currentPlayer}'s turn`;
   }
 }
 
-function resetStopwatch() {
-  clearInterval(timer);
-  isRunning = false;
-  seconds = minutes = hours = 0;
-  lapCounter = 1;
-  updateDisplay();
-  startStopBtn.textContent = "Start";
-  lapsList.innerHTML = "";
+function resetGame() {
+  board.fill(null);
+  cells.forEach(cell => {
+    cell.textContent = '';
+    cell.classList.remove('taken');
+    cell.addEventListener('click', handleClick);
+  });
+  currentPlayer = 'X';
+  status.textContent = "X's turn";
 }
 
-function recordLap() {
-  if (isRunning) {
-    const lapTime = display.textContent;
-    const li = document.createElement("li");
-    li.textContent = `Lap ${lapCounter++}: ${lapTime}`;
-    lapsList.prepend(li);
-  }
-}
-
-startStopBtn.addEventListener("click", startStopwatch);
-lapBtn.addEventListener("click", recordLap);
-resetBtn.addEventListener("click", resetStopwatch);
-
-// Initialize display
-updateDisplay();
+resetBtn.addEventListener('click', resetGame);
+resetGame();
