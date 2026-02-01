@@ -1,6 +1,6 @@
 # Tic Tac Toe Game
 
-A simple Tic Tac Toe game built using HTML and CSS.
+A simple Tic Tac Toe game built using HTML,CSS And JAVASCRIPT.
 
 ## Features
 - Clean UI design
@@ -10,4 +10,4 @@ A simple Tic Tac Toe game built using HTML and CSS.
 ## Technologies Used
 - HTML
 - CSS# tic-tac-toe-html-css
-Tic Tac Toe game built using HTML and CSS
+Tic Tac Toe game built using HTML,CSS And JAVASCRIPT 
